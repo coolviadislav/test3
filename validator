@@ -1,0 +1,34 @@
+<?php
+	$a = '[people][name]Иванов[/name][surname]Иванов[/surname][age]13[/age][/people]';
+	$b = '[people][name]Иванов[/name][surname]Иванов[/surname][age]13[age][/people]'; 
+	$c = '[people][surname]Иванов[/name][/name] Иванов [/surname][age]13[/age][/people]';
+
+	testtext($a);
+	testtext($b);
+	testtext($c);
+
+	function testtext($text) {
+		$matches = [];
+		preg_match_all('/\[(.*?)\]/', $text, $matches);
+
+		$stack = new SplStack();
+		foreach ($matches[0] as $tag) {
+			if($tag[1] === "/") {
+				if( ($stack->count() === 0) OR ($stack->pop() !== str_replace("/", '', $tag)) ) {
+					echo 'not';
+					return;
+				}			
+			} else {
+				$stack->push($tag);
+			}
+		}
+
+		if($stack->count() !== 0) {
+			echo 'not';
+			return;
+		}
+
+		echo 'yes';		
+	} 
+	
+
